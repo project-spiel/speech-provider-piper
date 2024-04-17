@@ -1,0 +1,3 @@
+.flatpak-builder
+.venv
+__pycache__

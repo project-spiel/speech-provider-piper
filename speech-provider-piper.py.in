@@ -1,0 +1,9 @@
+#!@python_path@
+# SPDX-License-Identifer: GPL-3.0-or-later
+
+import sys
+
+from speech_provider_piper.main import main
+
+if __name__ == '__main__':
+    sys.exit(main('@voices_dir@'))
