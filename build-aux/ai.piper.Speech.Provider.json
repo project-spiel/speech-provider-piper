@@ -1,0 +1,129 @@
+{
+  "app-id": "ai.piper.Speech.Provider",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "45",
+  "sdk": "org.gnome.Sdk",
+  "command": "speech-provider-piper",
+  "add-extensions": {
+    "ai.piper.Speech.Provider.Voice": {
+        "merge-dirs": "voices;extra",
+        "directory": "extensions",
+        "autodelete": true,
+        "subdirectories": true,
+        "no-autodownload": true
+    }
+  },
+  "modules": [
+    "python3-dasbus.json",
+    {
+      "name": "python3-piper-tts",
+      "buildsystem": "simple",
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
+      "build-commands": [
+        "pip3 install --prefix=${FLATPAK_DEST} \"piper-tts\""
+      ]
+    },
+    {
+      "name": "soundtouch",
+      "cleanup": [
+        "/bin/soundstretch",
+        "/include",
+        "/lib/pkgconfig/soundtouch.pc",
+        "/share/aclocal/soundtouch.m4",
+        "/share/doc/soundtouch"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://codeberg.org/soundtouch/soundtouch.git",
+          "tag": "2.1.2",
+          "commit": "9205fc971ed23cff407a67242bb9036a51113af4"
+        }
+      ]
+    },
+    {
+      "name": "gstreamer",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dauto_features=disabled",
+        "-Dgst-plugins-bad:soundtouch=enabled",
+        "-Dtools=disabled",
+        "-Dpython=disabled",
+        "-Ddevtools=disabled",
+        "-Dges=disabled",
+        "-Drtsp_server=disabled",
+        "-Domx=disabled",
+        "-Dsharp=disabled",
+        "-Dgst-examples=disabled",
+        "-Dtests=disabled",
+        "-Dexamples=disabled",
+        "-Ddoc=disabled",
+        "-Dgtk_doc=disabled",
+        "-Dgpl=disabled",
+        "-Dlibav=disabled",
+        "-Dbad=enabled",
+        "-Dvaapi=disabled",
+        "-Dugly=disabled",
+        "-Dgood=disabled"
+      ],
+      "cleanup": [
+        "/share/gtk-doc"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "disable-submodules": true,
+          "url": "https://gitlab.freedesktop.org/gstreamer/gstreamer.git",
+          "commit": "4af14db10e8355f980bbf79733af004e59d255fc",
+          "tag": "1.22.8"
+        }
+      ]
+    },
+    {
+      "name": "espeak-ng",
+      "cleanup": [
+        "*.la"
+      ],
+      "no-parallel-make": true,
+      "build-options": {
+        "ldflags": "-Wl,--allow-multiple-definition"
+      },
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/espeak-ng/espeak-ng.git",
+          "tag": "1.51.1",
+          "commit": "34762a2b9621d3643e67a00642984c21f0626bdc",
+          "x-checker-data": {
+            "type": "git",
+            "tag-pattern": "^([\\d.]+)$"
+          }
+        }
+      ],
+      "post-install": [
+        "ln -s /app/lib/libespeak-ng.so /app/lib/libespeak.so",
+        "ln -s /app/lib/libespeak-ng.a /app/lib/libespeak.a"
+      ]
+    },
+    {
+      "name": "speech-provider-piper",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../"
+        }
+      ],
+      "post-install": [
+        "install -d ${FLATPAK_DEST}/share/piper",
+        "install -d ${FLATPAK_DEST}/extensions/voices",
+        "ln -s ${FLATPAK_DEST}/extensions/voices ${FLATPAK_DEST}/share/piper/voices",
+        "ln -s ${FLATPAK_DEST}/extensions/extra ${FLATPAK_DEST}/share/piper/extra"
+      ]
+    }
+  ]
+}

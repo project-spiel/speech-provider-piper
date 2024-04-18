@@ -99,9 +99,14 @@ class PiperSynthWorker(GObject.Object):
             start_time = time()
             _voice_id, voice = PiperSynthWorker._cached_voice
             if not _voice_id or _voice_id != voice_id:
-                voice = PiperVoice.load(
-                    (self.voices_dir / voice_id).with_suffix(".onnx")
-                )
+                model_path = (self.voices_dir / voice_id).with_suffix(".onnx")
+                config_path = model_path.with_suffix('.onnx.json')
+                if not model_path.exists():
+                    # The onnx is 'extra data' in flatpaks
+                    model_path = (
+                        self.voices_dir.parent / "extra" / voice_id
+                    ).with_suffix(".onnx")
+                voice = PiperVoice.load(model_path, config_path)
                 PiperSynthWorker._cached_voice = (voice_id, voice)
 
             return voice

@@ -1,0 +1,90 @@
+name: Build Flatpak Repository
+
+on:
+  push:
+    branches: ["main"]
+  
+  workflow_dispatch:
+
+jobs:
+  flatpak:
+    name: Flatpak
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/andyholmes/flatter/rust:23.08
+      options: --privileged
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout website repo
+        uses: actions/checkout@v4
+        with:
+          repository: project-spiel/project-spiel.github.io
+          ssh-key: ${{ secrets.WEBSITE_KEY }}
+          ref: gh-pages
+          path: website
+
+      - name: Setup repo directory
+        run: |
+          mkdir -p website/repo
+          ln -s website/repo repo
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+
+      - name: Generate Voice Manifests
+        id: gen_voices
+        run: |
+          {
+            echo 'manifests<<EOF'
+            python build-aux/generate_voice_manifests.py
+            echo EOF
+          }  >> "$GITHUB_OUTPUT"
+
+      - name: Setup GPG
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Build Core App
+        id: build
+        uses: andyholmes/flatter@main
+        with:
+          files: |
+            build-aux/org.espeak.Speech.Provider.json
+          arch: x86_64
+          cache-key: ''
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+
+      - name: Setup Local Flatpak Repo
+        run: |
+          flatpak remote-add --no-gpg-verify --if-not-exists \
+                  espeak-repo ${{steps.build.outputs.repository}}
+
+      - name: Build Voice Extensions
+        id: build-ext
+        uses: andyholmes/flatter@main
+        with:
+          files: ${{ steps.gen_voices.outputs.manifests }}
+          arch: x86_64
+          flatpak-builder-args: |
+            --install-deps-from=espeak-repo
+          cache-key: ''
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+
+      - name: Deploy
+        run: |
+          cd website
+          git config --global user.email "me@project-spiel.org"
+          git config --global user.name "Spiel Robot"
+          git add repo
+          git commit -m "Updated eSpeak-NG packages"
+          git push -f origin gh-pages
+        
