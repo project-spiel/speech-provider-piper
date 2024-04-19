@@ -56,7 +56,7 @@ for onnx_json in pathlib.Path("piper-voices").glob("**/*.onnx.json"):
 
     name = onnx.stem
     escaped_name = unidecode(name.replace(" ", "_"))
-    manifest = f"_voices/ai.piper.Speech.Provider.Voice.{name}.json"
+    manifest = f"_voices/ai.piper.Speech.Provider.Voice.{escaped_name}.json"
     mf = open(manifest, "w")
     mf.write(
         MANIFEST_TEMPLATE.format(
