@@ -10,7 +10,7 @@ MANIFEST_TEMPLATE = """{{
   "app-id": "ai.piper.Speech.Provider.Voice.{escaped_name}",
   "runtime": "ai.piper.Speech.Provider",
   "runtime-version": "master",
-  "sdk": "org.freedesktop.Sdk//23.08",
+  "sdk": "org.gnome.Sdk//45",
   "build-extension": true,
   "modules": [
     {{
