@@ -54,6 +54,15 @@ jobs:
             python build-aux/generate_voice_manifests.py
             echo EOF
           }  >> "$GITHUB_OUTPUT"
+      
+      - name: debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: voice-manifests
+          path: _voices
+
+      - name: fail here
+        run: ls foo
 
       - name: Setup GPG
         id: gpg
