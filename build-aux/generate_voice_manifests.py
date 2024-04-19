@@ -24,11 +24,12 @@ MANIFEST_TEMPLATE = """{{
         {{
           "type": "file",
           "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/{onnx_json}?download=true",
-          "sha256": "{onnx_json_sha256}"
+          "sha256": "{onnx_json_sha256}",
+          "dest-filename": "{escaped_name}.onnx.json"
         }},
         {{
           "type": "extra-data",
-          "filename": "{name}.onnx",
+          "filename": "{escaped_name}.onnx",
           "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/{onnx}?download=true",
           "sha256": "{onnx_sha256}",
           "size": {onnx_size}
