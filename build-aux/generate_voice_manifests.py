@@ -2,6 +2,7 @@ import pathlib
 from hashlib import sha256
 import re
 from unidecode import unidecode
+import urllib.parse
 
 SHA256_REGEX = r"oid sha256:(\S+)"
 SIZE_REGEX = r"size (\d+)"
@@ -63,8 +64,8 @@ for onnx_json in pathlib.Path("piper-voices").glob("**/*.onnx.json"):
         MANIFEST_TEMPLATE.format(
             name=name,
             escaped_name=escaped_name,
-            onnx_json=onnx_json.relative_to("piper-voices"),
-            onnx=onnx.relative_to("piper-voices"),
+            onnx_json=urllib.parse.quote(str(onnx_json.relative_to("piper-voices"))),
+            onnx=urllib.parse.quote(str(onnx.relative_to("piper-voices"))),
             onnx_json_sha256=onnx_json_sha256,
             onnx_sha256=onnx_sha256,
             onnx_size=onnx_size,
