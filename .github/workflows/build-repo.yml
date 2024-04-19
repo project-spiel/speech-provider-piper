@@ -44,7 +44,7 @@ jobs:
           python-version: '3.10' 
 
       - name: Get Python Modules for Script
-        run: pip install unidecode
+        run: python3 -m pip install unidecode
   
       - name: Generate Voice Manifests
         id: gen_voices
