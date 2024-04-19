@@ -11,7 +11,7 @@ jobs:
     name: Flatpak
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/andyholmes/flatter/rust:23.08
+      image: ghcr.io/andyholmes/flatter/freedesktop:23.08
       options: --privileged
     permissions:
       contents: write
@@ -33,11 +33,19 @@ jobs:
           mkdir -p website/repo
           ln -s website/repo repo
 
+      - name: Checkout Piper Models
+        env:
+          GIT_LFS_SKIP_SMUDGE: 1
+        run: git clone --depth=1 https://huggingface.co/rhasspy/piper-voices
+  
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10' 
 
+      - name: Get Python Modules for Script
+        run: pip install unidecode
+  
       - name: Generate Voice Manifests
         id: gen_voices
         run: |
@@ -58,7 +66,7 @@ jobs:
         uses: andyholmes/flatter@main
         with:
           files: |
-            build-aux/org.espeak.Speech.Provider.json
+            build-aux/ai.piper.Speech.Provider.json
           arch: x86_64
           cache-key: ''
           gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
@@ -66,7 +74,7 @@ jobs:
       - name: Setup Local Flatpak Repo
         run: |
           flatpak remote-add --no-gpg-verify --if-not-exists \
-                  espeak-repo ${{steps.build.outputs.repository}}
+                  tmp-repo ${{steps.build.outputs.repository}}
 
       - name: Build Voice Extensions
         id: build-ext
@@ -75,7 +83,7 @@ jobs:
           files: ${{ steps.gen_voices.outputs.manifests }}
           arch: x86_64
           flatpak-builder-args: |
-            --install-deps-from=espeak-repo
+            --install-deps-from=tmp-repo
           cache-key: ''
           gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
 
@@ -85,6 +93,6 @@ jobs:
           git config --global user.email "me@project-spiel.org"
           git config --global user.name "Spiel Robot"
           git add repo
-          git commit -m "Updated eSpeak-NG packages"
+          git commit -m "Updated Piper packages"
           git push -f origin gh-pages
         
