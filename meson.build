@@ -43,3 +43,8 @@ install_data(
   meson.current_build_dir() / 'ai.piper.Speech.Provider.service',
   install_dir: get_option('prefix') / get_option('datadir') / 'dbus-1/services',
 )
+
+install_data(
+  'data' / 'ai.piper.Speech.Provider.metainfo.xml',
+  install_dir: get_option('datadir') / 'metainfo',
+)

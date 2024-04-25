@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="generic">
+  <id>ai.piper.Speech.Provider</id>
+  
+  <name>Piper Speech Provider</name>
+  <summary>Speech provider for Piper speech engine</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  
+  <description>
+    <p>
+      Speech provider for Piper speech engine
+    </p>
+  </description>
+    
+  <categories>
+    <category>AudioVideo</category>
+    <category>Player</category>
+  </categories>
+  
+  <provides>
+    <binary>speech-provider-piper</binary>
+  </provides>
+</component>
