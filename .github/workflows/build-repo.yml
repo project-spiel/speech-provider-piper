@@ -20,18 +20,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout website repo
+      - name: Checkout Flatpaks repo
         uses: actions/checkout@v4
         with:
-          repository: project-spiel/project-spiel.github.io
-          ssh-key: ${{ secrets.WEBSITE_KEY }}
-          ref: gh-pages
-          path: website
+          repository: project-spiel/flatpaks
+          ssh-key: ${{ secrets.FLATPAKS_KEY }}
+          ref: main
+          path: flatpaks
 
       - name: Setup repo directory
         run: |
-          mkdir -p website/repo
-          ln -s website/repo repo
+          mkdir -p flatpaks/repo
+          ln -s flatpaks/repo repo
 
       - name: Checkout Piper Models
         env:
@@ -89,10 +89,11 @@ jobs:
 
       - name: Deploy
         run: |
-          cd website
+          cd flatpaks
           git config --global user.email "me@project-spiel.org"
           git config --global user.name "Spiel Robot"
           git add repo
           git commit -m "Updated Piper packages"
+          git pull --rebase
           git push -f origin gh-pages
         
