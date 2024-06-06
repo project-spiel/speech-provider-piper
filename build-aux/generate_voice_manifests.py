@@ -37,7 +37,7 @@ MANIFEST_TEMPLATE = """{
   "branch": "1.0",
   "runtime": "ai.piper.Speech.Provider",
   "runtime-version": "master",
-  "sdk": "org.gnome.Sdk//45",
+  "sdk": "org.freedesktop.Sdk//23.08",
   "build-extension": true,
   "modules": [
     {
