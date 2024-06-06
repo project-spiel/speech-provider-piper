@@ -1,0 +1,2 @@
+option('offline', type : 'boolean', value : false)
+option('voices_dir', type : 'string')

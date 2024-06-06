@@ -1,37 +1,26 @@
 project('speech-provider-piper',
-  license: 'GPL-3',
-  version: run_command(
-    'python3', '-c',
-    'from speech_provider_piper.version import __version__; print(__version__, end="")',
-    check: true
-  ).stdout(),
-)
+        'rust',
+        version: files('VERSION'),
+        license: 'GPL3',
+	meson_version : '>= 0.58')
 
-# Dependencies
-python_module = import('python')
-py = python_module.find_installation('python3', required: true, modules: [
-  'gi', 'piper', 'dasbus'
-])
+version = meson.project_version()
 
-# Configuration used in template files
+prefix = get_option('prefix')
+bindir = prefix / get_option('bindir')
+localedir = prefix / get_option('localedir')
+datadir = prefix / get_option('datadir')
+pkgdatadir = datadir / meson.project_name()
+
+application_id = 'ai.piper.Speech.Provider'
+
+find_program('cargo', required: true)
+cargo_script = find_program('cargo.py')
+
+subdir('src')
+
 config = configuration_data()
-config.set('python_path', py.path())
-config.set('bindir', get_option('prefix') / get_option('bindir'))
-config.set('voices_dir', get_option('prefix') / get_option('datadir') / 'piper/voices')
-
-configure_file(
-  input: 'speech-provider-piper.py.in',
-  output: 'speech-provider-piper',
-  configuration: config,
-  install_mode: 'rwxr-xr-x',
-  install_dir: get_option('bindir'),
-)
-
-# Python module
-install_subdir(
-  'speech_provider_piper',
-  install_dir: py.get_install_dir(),
-)
+config.set('bindir', bindir)
 
 # DBus service
 configure_file(
@@ -41,7 +30,7 @@ configure_file(
 )
 install_data(
   meson.current_build_dir() / 'ai.piper.Speech.Provider.service',
-  install_dir: get_option('prefix') / get_option('datadir') / 'dbus-1/services',
+  install_dir: get_option('datadir') / 'dbus-1/services',
 )
 
 install_data(

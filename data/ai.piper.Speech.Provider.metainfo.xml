@@ -3,14 +3,14 @@
   <id>ai.piper.Speech.Provider</id>
   
   <name>Piper Speech Provider</name>
-  <summary>Speech provider for Piper speech engine</summary>
+  <summary>Speech provider for neural TTS models</summary>
   
   <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   
   <description>
     <p>
-      Speech provider for Piper speech engine
+      Speech provider for neural TTS models, like Piper.
     </p>
   </description>
     

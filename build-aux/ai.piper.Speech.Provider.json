@@ -1,90 +1,60 @@
 {
   "app-id": "ai.piper.Speech.Provider",
-  "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
-  "sdk": "org.gnome.Sdk",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "23.08",
+  "sdk": "org.freedesktop.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable",
+    "org.freedesktop.Sdk.Extension.llvm17"
+  ],
   "command": "speech-provider-piper",
+  "build-options": {
+    "prepend-path": "/usr/lib/sdk/llvm17/bin:/usr/lib/sdk/rust-stable/bin:/app/sdk/bin",
+    "prepend-ld-library-path": "/usr/lib/sdk/llvm17/lib:/app/lib",
+    "env": {
+      "RUSTFLAGS": "--remap-path-prefix =../ -L/app/lib",
+      "CARGO_HOME": "/run/build/speech-provider-piper/cargo"
+    }
+  },
   "add-extensions": {
     "ai.piper.Speech.Provider.Voice": {
-        "merge-dirs": "voices;extra",
+        "merge-dirs": "extra",
         "directory": "extensions",
         "autodelete": true,
         "subdirectories": true,
-        "no-autodownload": true
+        "no-autodownload": true,
+        "version": "1.0"
     }
   },
   "modules": [
-    "python3-dasbus.json",
     {
-      "name": "python3-piper-tts",
+      "name": "sonic",
       "buildsystem": "simple",
-      "build-options": {
-        "build-args": [
-          "--share=network"
-        ]
-      },
       "build-commands": [
-        "pip3 install --prefix=${FLATPAK_DEST} \"piper-tts\""
-      ]
-    },
-    {
-      "name": "soundtouch",
-      "cleanup": [
-        "/bin/soundstretch",
-        "/include",
-        "/lib/pkgconfig/soundtouch.pc",
-        "/share/aclocal/soundtouch.m4",
-        "/share/doc/soundtouch"
+        "sed -i 's/usr/app/' Makefile",
+        "make",
+        "make install"
       ],
       "sources": [
         {
           "type": "git",
-          "url": "https://codeberg.org/soundtouch/soundtouch.git",
-          "tag": "2.1.2",
-          "commit": "9205fc971ed23cff407a67242bb9036a51113af4"
-        }
-      ]
-    },
-    {
-      "name": "gstreamer",
-      "buildsystem": "meson",
-      "config-opts": [
-        "-Dauto_features=disabled",
-        "-Dgst-plugins-bad:soundtouch=enabled",
-        "-Dtools=disabled",
-        "-Dpython=disabled",
-        "-Ddevtools=disabled",
-        "-Dges=disabled",
-        "-Drtsp_server=disabled",
-        "-Domx=disabled",
-        "-Dsharp=disabled",
-        "-Dgst-examples=disabled",
-        "-Dtests=disabled",
-        "-Dexamples=disabled",
-        "-Ddoc=disabled",
-        "-Dgtk_doc=disabled",
-        "-Dgpl=disabled",
-        "-Dlibav=disabled",
-        "-Dbad=enabled",
-        "-Dvaapi=disabled",
-        "-Dugly=disabled",
-        "-Dgood=disabled"
-      ],
-      "cleanup": [
-        "/share/gtk-doc"
-      ],
-      "sources": [
-        {
-          "type": "git",
-          "disable-submodules": true,
-          "url": "https://gitlab.freedesktop.org/gstreamer/gstreamer.git",
-          "commit": "4af14db10e8355f980bbf79733af004e59d255fc",
-          "tag": "1.22.8"
+          "url": "https://github.com/waywardgeek/sonic.git",
+          "commit": "8694c596378c24e340c09ff2cd47c065494233f1"
         }
       ]
     },
     {
       "name": "espeak-ng",
+      "buildsystem": "autotools",
+      "config-opts": [
+        "--with-async=no",
+        "--with-mbrola=no",
+        "--with-sonic=no",
+        "--with-pcaudiolib=no",
+        "--with-klatt=no",
+        "--with-pcaudiolib=no",
+        "--with-speechplayer=no"
+      ],
       "cleanup": [
         "*.la"
       ],
@@ -95,13 +65,8 @@
       "sources": [
         {
           "type": "git",
-          "url": "https://github.com/espeak-ng/espeak-ng.git",
-          "tag": "1.51.1",
-          "commit": "34762a2b9621d3643e67a00642984c21f0626bdc",
-          "x-checker-data": {
-            "type": "git",
-            "tag-pattern": "^([\\d.]+)$"
-          }
+          "url": "https://github.com/rhasspy/espeak-ng.git",
+          "commit": "8593723f10cfd9befd50de447f14bf0a9d2a14a4"
         }
       ],
       "post-install": [
@@ -110,19 +75,54 @@
       ]
     },
     {
+      "name": "ortrs",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cp -r --no-target-directory ./lib /app/lib"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "only-arches": [
+            "x86_64"
+          ],
+          "url": "https://parcel.pyke.io/v2/delivery/ortrs/packages/msort-binary/1.17.3/ortrs-msort_static-v1.17.3-x86_64-unknown-linux-gnu.tgz",
+          "sha256": "6faf334246a635808fcdac6d5550c4d56814b1e92cca5fc0642af41437bf071f"
+        },
+        {
+          "type": "archive",
+          "only-arches": [
+            "aarch64"
+          ],
+          "url": "https://parcel.pyke.io/v2/delivery/ortrs/packages/msort-binary/1.17.3/ortrs-msort_static-v1.17.3-aarch64-unknown-linux-gnu.tgz",
+          "sha256": "ca36fb040f127c5cafa081bac713240ee8c3f4d9f1bd7b789b789ffdd4885f0f"
+        }
+      ]
+    },
+    {
       "name": "speech-provider-piper",
       "buildsystem": "meson",
+      "config-opts": [
+        "-Doffline=true",
+        "-Dvoices_dir=/app/extensions/extra"
+      ],
+      "build-options": {
+        "ldflags": "--verbose",
+        "env": {
+          "ORT_LIB_LOCATION": "/app/lib",
+          "USE_SYSTEM_ESPEAK": "1",
+          "SYSTEM_SONIC_PREFIX": "/app"
+        }
+      },
       "sources": [
+        "piper-cargo-source.json",
         {
           "type": "dir",
           "path": "../"
         }
       ],
       "post-install": [
-        "install -d ${FLATPAK_DEST}/share/piper",
-        "install -d ${FLATPAK_DEST}/extensions/voices",
-        "ln -s ${FLATPAK_DEST}/extensions/voices ${FLATPAK_DEST}/share/piper/voices",
-        "ln -s ${FLATPAK_DEST}/extensions/extra ${FLATPAK_DEST}/share/piper/extra"
+        "install -d ${FLATPAK_DEST}/extensions"
       ]
     }
   ]
