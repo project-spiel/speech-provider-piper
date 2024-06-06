@@ -36,6 +36,7 @@ jobs:
       - name: Checkout Piper Models
         env:
           GIT_LFS_SKIP_SMUDGE: 1
+          GIT_CLONE_PROTECTION_ACTIVE: 'false'
         run: |
           git clone --depth=1 https://huggingface.co/rhasspy/piper-voices
           git clone --depth=1 https://huggingface.co/datasets/mush42/piper-rt
