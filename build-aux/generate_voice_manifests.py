@@ -110,14 +110,14 @@ def create_rt_manifest(name, escaped_name, tarball, tarball_size, tarball_sha256
         "dest-filename": "apply_extra",
         "commands": [
             f"mkdir {escaped_name}",
-            f"tar -xf {tarball} -C {escaped_name}",
-            f"rm {tarball}"
+            f"tar -xf {escaped_name}.tar -C {escaped_name}",
+            f"rm {escaped_name}.tar"
         ]
       })
 
   model_module["sources"].append({
           "type": "extra-data",
-          "filename": tarball,
+          "filename": f"{escaped_name}.tar",
           "url": f"https://huggingface.co/datasets/mush42/piper-rt/resolve/main/{tarball}?download=true",
           "sha256": tarball_sha256,
           "size": tarball_size
