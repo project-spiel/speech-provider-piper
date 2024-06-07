@@ -13,8 +13,8 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
 <component type="addon">
   <id>ai.piper.Speech.Provider.Voice.{escaped_name}</id>
 
-  <name>{escaped_name}</name>
-  <summary>The {escaped_name} model for Piper</summary>
+  <name>{name}</name>
+  <summary>The {name} model for Piper</summary>
 
   <metadata_license>MIT</metadata_license>
   <project_license>LGPL-3.0-or-later</project_license>
@@ -25,7 +25,7 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
 
   <description>
     <p>
-      The {escaped_name} model for Piper
+      The {name} model for Piper
     </p>
   </description>
 
@@ -167,4 +167,4 @@ for tarball in pathlib.Path("piper-rt").glob("*.tar.gz"):
       tarball_size = int(re.findall(SIZE_REGEX, tarball_data)[0])
   name = pathlib.Path(tarball.stem).stem
   escaped_name = unidecode(name.replace(" ", "_").replace("+", "_"))
-  create_rt_manifest(name, escaped_name, tarball.name, tarball_size, tarball_sha256)
+  create_rt_manifest(name, escaped_name, urllib.parse.quote(tarball.name), tarball_size, tarball_sha256)
