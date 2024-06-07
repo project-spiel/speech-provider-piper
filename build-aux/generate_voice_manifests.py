@@ -13,8 +13,8 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
 <component type="addon">
   <id>ai.piper.Speech.Provider.Voice.{escaped_name}</id>
 
-  <name>{name}</name>
-  <summary>The {name} model for Piper</summary>
+  <name>{escaped_name}</name>
+  <summary>The {escaped_name} model for Piper</summary>
 
   <metadata_license>MIT</metadata_license>
   <project_license>LGPL-3.0-or-later</project_license>
@@ -25,7 +25,7 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
 
   <description>
     <p>
-      The {name} model for Piper
+      The {escaped_name} model for Piper
     </p>
   </description>
 
