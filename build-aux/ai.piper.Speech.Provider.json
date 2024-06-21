@@ -66,7 +66,7 @@
         {
           "type": "git",
           "url": "https://github.com/eeejay/espeak-ng.git",
-          "commit": "d89970e82c05e35bd630231aa6882264266148f7"
+          "branch": "rhasspy_main"
         }
       ],
       "post-install": [
@@ -96,6 +96,21 @@
           ],
           "url": "https://parcel.pyke.io/v2/delivery/ortrs/packages/msort-binary/1.17.3/ortrs-msort_static-v1.17.3-aarch64-unknown-linux-gnu.tgz",
           "sha256": "ca36fb040f127c5cafa081bac713240ee8c3f4d9f1bd7b789b789ffdd4885f0f"
+        }
+      ]
+    },
+    {
+      "name": "libspeechprovider",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dtests=false",
+        "-Ddocs=false"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/project-spiel/libspeechprovider.git",
+          "branch": "main"
         }
       ]
     },
