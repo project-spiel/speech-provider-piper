@@ -2,20 +2,19 @@ use glob::{glob, GlobError, PatternError};
 use serde::Deserialize;
 use sonata_piper::PiperSynthesisConfig;
 use sonata_synth::{
-    AudioOutputConfig, AudioSamples, SonataError, SonataModel, SonataResult,
-    SonataSpeechSynthesizer,
+    Audio, AudioOutputConfig, SonataError, SonataModel, SonataResult, SonataSpeechSynthesizer,
 };
+use speechprovider::*;
 use std::collections::HashMap;
-use std::env;
 use std::fs::File;
 use std::future::pending;
-use std::io::prelude::*;
+use std::os::fd::IntoRawFd;
 use std::path::Path;
 use std::result::Result;
 use std::sync::Arc;
+use std::{env, thread};
 use zbus::zvariant::OwnedFd;
-use zbus::{interface, ConnectionBuilder, MessageHeader, SignalContext};
-use ssml_parser::parse_ssml;
+use zbus::{dbus_interface, ConnectionBuilder, MessageHeader, SignalContext};
 
 static INIT_ORT_ENVIRONMENT: std::sync::Once = std::sync::Once::new();
 
@@ -41,7 +40,7 @@ fn param_to_percent(value: f32, min: f32, max: f32) -> u8 {
 }
 
 #[derive(Clone, Debug, zbus::DBusError)]
-#[zbus(prefix = "ai.piper.Speech.Provider.Error")]
+#[dbus_error(prefix = "ai.piper.Speech.Provider.Error")]
 pub enum PiperProviderError {
     Failed,
 }
@@ -122,7 +121,7 @@ fn load_voices_from_model(
     };
 
     let sample_rate = model_config.audio.sample_rate;
-    let audio_format = format!("audio/x-raw,format=S16LE,channels=1,rate={sample_rate}");
+    let audio_format = format!("audio/x-spiel,format=S16LE,channels=1,rate={sample_rate}");
     let identifier = String::from(
         voice_path
             .parent()?
@@ -130,7 +129,12 @@ fn load_voices_from_model(
             .ok()?
             .to_str()?,
     );
-    let features = 0;
+
+    let mut features = 0;
+
+    if model_config.streaming {
+        features |= VoiceFeature::EVENTS_SENTENCE;
+    }
 
     let mut name = match model_config.dataset {
         Some(name) => name,
@@ -180,14 +184,14 @@ impl Speaker {
     }
 }
 
-#[interface(name = "org.freedesktop.Speech.Provider")]
+#[dbus_interface(name = "org.freedesktop.Speech.Provider")]
 impl Speaker {
-    #[zbus(property)]
+    #[dbus_interface(property)]
     async fn name(&self) -> String {
         "Piper".to_string()
     }
 
-    #[zbus(property)]
+    #[dbus_interface(property)]
     async fn voices(
         &self,
     ) -> Result<Vec<(String, String, String, u64, Vec<String>)>, zbus::fdo::Error> {
@@ -275,35 +279,44 @@ impl Speaker {
             volume: Some(100),
             appended_silence_ms: Some(0),
         };
-        let mut f = File::from(std::os::fd::OwnedFd::from(fd));
-        let stream: Box<dyn Iterator<Item = SonataResult<AudioSamples>>> =
-            if synth.supports_streaming_output() {
-                Box::new(synth.synthesize_streamed(
-                    text_to_speak,
-                    Some(output_config),
-                    100,
-                    3,
-                )?)
+
+        thread::spawn(move || {
+            let stream_writer = StreamWriter::new(fd.into_raw_fd());
+            // let mut f = File::from(std::os::fd::OwnedFd::from(fd));
+            let stream: Box<dyn Iterator<Item = SonataResult<Audio>>> = if synth
+                .supports_streaming_output()
+            {
+                Box::new(
+                    synth
+                        .synthesize_streamed(text_to_speak, Some(output_config), 100, 3)
+                        .unwrap()
+                        .map(|res| res.map(|samples| Audio::new(samples, 0, None))),
+                )
             } else {
                 Box::new(
                     synth
-                        .synthesize_parallel(text_to_speak, Some(output_config))?
-                        .map(|res| res.map(|aud| aud.samples)),
+                        .synthesize_parallel(text_to_speak, Some(output_config))
+                        .unwrap(),
                 )
             };
 
-        for result in stream {
-            let audio = result?;
-            let wav_bytes = audio.as_wave_bytes();
-            match f.write_all(&wav_bytes) {
-                Ok(_) => (),
-                Err(_) => break,
+            stream_writer.send_stream_header();
+            for result in stream {
+                let audio = result.unwrap();
+                let wav_bytes = audio.as_wave_bytes();
+                if let Some((start, end)) = audio.sentence_boundary {
+                    stream_writer.send_event(
+                        EventType::Sentence,
+                        start.try_into().unwrap(),
+                        end.try_into().unwrap(),
+                        "",
+                    );
+                }
+                for chunk in wav_bytes.chunks(8192) {
+                    stream_writer.send_audio(&chunk);
+                }
             }
-            match f.flush() {
-                Ok(_) => (),
-                Err(_) => break,
-            }
-        }
+        });
         Ok(())
     }
 }
