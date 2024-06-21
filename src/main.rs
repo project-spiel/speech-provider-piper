@@ -130,7 +130,11 @@ fn load_voices_from_model(
             .to_str()?,
     );
 
-    let mut features = 0;
+    let mut features = VoiceFeature::SSML_SAY_AS_TELEPHONE
+        | VoiceFeature::SSML_SAY_AS_CHARACTERS
+        | VoiceFeature::SSML_SAY_AS_CHARACTERS_GLYPHS
+        | VoiceFeature::SSML_SUB
+        | VoiceFeature::SSML_SENTENCE_PARAGRAPH;
 
     if model_config.streaming {
         features |= VoiceFeature::EVENTS_SENTENCE;
@@ -141,7 +145,7 @@ fn load_voices_from_model(
         None => String::from(model_config.key.clone()?.split("-").nth(1)?),
     };
 
-    if model_config.streaming.is_some_and(|x| x)  {
+    if model_config.streaming.is_some_and(|x| x) {
         name = format!("{name} RT");
     }
 
@@ -267,11 +271,7 @@ impl Speaker {
             .map_or_else(|| None, |v| v.parse::<i64>().ok());
         synth.set_fallback_synthesis_config(&synth_config)?;
 
-        let text_to_speak = if is_ssml {
-            String::from(parse_ssml(utterance)?.get_text())
-        } else {
-            String::from(utterance)
-        };
+        let text_to_speak = String::from(utterance);
 
         let output_config = AudioOutputConfig {
             rate: Some(param_to_percent(rate, 0.5f32, 5.5f32)),
@@ -288,14 +288,14 @@ impl Speaker {
             {
                 Box::new(
                     synth
-                        .synthesize_streamed(text_to_speak, Some(output_config), 100, 3)
+                        .synthesize_streamed(text_to_speak, is_ssml, Some(output_config), 100, 3)
                         .unwrap()
                         .map(|res| res.map(|samples| Audio::new(samples, 0, None))),
                 )
             } else {
                 Box::new(
                     synth
-                        .synthesize_parallel(text_to_speak, Some(output_config))
+                        .synthesize_parallel(text_to_speak, is_ssml, Some(output_config))
                         .unwrap(),
                 )
             };
