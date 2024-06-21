@@ -65,8 +65,8 @@
       "sources": [
         {
           "type": "git",
-          "url": "https://github.com/rhasspy/espeak-ng.git",
-          "commit": "8593723f10cfd9befd50de447f14bf0a9d2a14a4"
+          "url": "https://github.com/eeejay/espeak-ng.git",
+          "commit": "d89970e82c05e35bd630231aa6882264266148f7"
         }
       ],
       "post-install": [

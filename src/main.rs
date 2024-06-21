@@ -136,10 +136,6 @@ fn load_voices_from_model(
         | VoiceFeature::SSML_SUB
         | VoiceFeature::SSML_SENTENCE_PARAGRAPH;
 
-    if model_config.streaming {
-        features |= VoiceFeature::EVENTS_SENTENCE;
-    }
-
     let mut name = match model_config.dataset {
         Some(name) => name,
         None => String::from(model_config.key.clone()?.split("-").nth(1)?),
@@ -147,6 +143,8 @@ fn load_voices_from_model(
 
     if model_config.streaming.is_some_and(|x| x) {
         name = format!("{name} RT");
+    } else {
+        features |= VoiceFeature::EVENTS_SENTENCE;
     }
 
     let language = match model_config.language {
@@ -165,13 +163,19 @@ fn load_voices_from_model(
                 speaker_name,
                 speaker_ident,
                 audio_format.clone(),
-                features,
+                features.bits() as u64,
                 languages.clone(),
             )
         })
         .collect();
     if voices.is_empty() {
-        voices.push((name, identifier, audio_format, features, languages));
+        voices.push((
+            name,
+            identifier,
+            audio_format,
+            features.bits() as u64,
+            languages,
+        ));
     }
     Some(voices)
 }
