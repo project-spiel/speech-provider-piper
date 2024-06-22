@@ -29,7 +29,7 @@ jobs:
           path: flatpaks
 
       - name: Install rust nightly SDK
-        run: flatpak install -y --user org.freedesktop.Sdk.Extension.rust-nightly//23.08
+        run: flatpak install --noninteractive flathub org.freedesktop.Sdk.Extension.rust-nightly//23.08
 
       - name: Setup repo directory
         run: |
