@@ -29,6 +29,10 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
     </p>
   </description>
 
+  <languages>
+    <lang>{lang}</lang>
+  </languages>
+
 </component>
 '''
 
@@ -54,7 +58,8 @@ MANIFEST_TEMPLATE = """{
 """
 
 def create_manifest(name, escaped_name, onnx, onnx_size, onnx_sha256, onnx_json, onnx_json_size, onnx_json_sha256):
-  metainfo = METAINFO_TEMPLATE.format(name=name, escaped_name=escaped_name)
+  lang = re.match(r"^(\w\w_\w\w)-", name).groups()[0]
+  metainfo = METAINFO_TEMPLATE.format(name=name, escaped_name=escaped_name, lang=lang)
   manifest = json.loads(MANIFEST_TEMPLATE, object_pairs_hook=OrderedDict)
   manifest["app-id"] = f"ai.piper.Speech.Provider.Voice.{escaped_name}"
   model_module = manifest["modules"][0]
@@ -100,7 +105,8 @@ def create_manifest(name, escaped_name, onnx, onnx_size, onnx_sha256, onnx_json,
   print(fname)
 
 def create_rt_manifest(name, escaped_name, tarball, tarball_size, tarball_sha256):
-  metainfo = METAINFO_TEMPLATE.format(name=name, escaped_name=escaped_name)
+  lang = re.match(r"^(\w\w_\w\w)-", name).groups()[0]
+  metainfo = METAINFO_TEMPLATE.format(name=name, escaped_name=escaped_name, lang=lang)
   manifest = json.loads(MANIFEST_TEMPLATE, object_pairs_hook=OrderedDict)
   manifest["app-id"] = f"ai.piper.Speech.Provider.Voice.{escaped_name}"
   model_module = manifest["modules"][0]
