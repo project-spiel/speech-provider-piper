@@ -23,6 +23,10 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
     <id>ai.piper.Speech.Provider</id>
   </extends>
 
+  <requires>
+    <id>ai.piper.Speech.Provider</id>
+  </requires>
+
   <description>
     <p>
       The {name} model for Piper
