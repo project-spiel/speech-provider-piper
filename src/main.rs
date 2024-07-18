@@ -1,4 +1,5 @@
 use glob::{glob, GlobError, PatternError};
+use oxilangtag::LanguageTag;
 use serde::Deserialize;
 use sonata_piper::PiperSynthesisConfig;
 use sonata_synth::{
@@ -147,10 +148,18 @@ fn load_voices_from_model(
         features |= VoiceFeature::EVENTS_SENTENCE;
     }
 
-    let language = match model_config.language {
-        Some(lang) => lang.code,
-        None => String::from(model_config.key?.split("-").next()?),
+    let language = {
+        let language_string = match model_config.language {
+            Some(lang) => lang.code,
+            None => String::from(model_config.key?.split("-").next()?),
+        }.replace("_", "-");
+
+        String::from(match LanguageTag::parse_and_normalize(&language_string) {
+            Ok(lang_tag) => String::from(lang_tag.as_str()),
+            Err(_) => language_string
+        })
     };
+
 
     let languages = vec![String::from(language.clone())];
     let mut voices: Vec<(String, String, String, u64, Vec<String>)> = model_config

@@ -1704,6 +1704,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/oxilangtag/oxilangtag-0.1.5.crate",
+        "sha256": "23f3f87617a86af77fa3691e6350483e7154c2ead9f1261b75130e21ca0f8acb",
+        "dest": "cargo/vendor/oxilangtag-0.1.5"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"23f3f87617a86af77fa3691e6350483e7154c2ead9f1261b75130e21ca0f8acb\", \"files\": {}}",
+        "dest": "cargo/vendor/oxilangtag-0.1.5",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/parking/parking-2.2.0.crate",
         "sha256": "bb813b8af86854136c6922af0598d719255ecb2179515e6e7730d468f05c9cae",
         "dest": "cargo/vendor/parking-2.2.0"

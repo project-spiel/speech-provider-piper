@@ -15,3 +15,4 @@ anyhow = "1.0.83"
 speechprovider = { git = "https://github.com/project-spiel/rust-bindings.git", package = "speechprovider" }
 zbus = "3.13"
 zvariant = "3.6"
+oxilangtag = "0.1.5"

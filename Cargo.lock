@@ -1251,6 +1251,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "oxilangtag"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23f3f87617a86af77fa3691e6350483e7154c2ead9f1261b75130e21ca0f8acb"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "parking"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1756,6 +1765,7 @@ dependencies = [
  "async-std",
  "glob",
  "ort",
+ "oxilangtag",
  "serde",
  "serde_json",
  "sonata-piper",
