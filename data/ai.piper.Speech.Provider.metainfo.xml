@@ -2,7 +2,7 @@
 <component type="generic">
   <id>ai.piper.Speech.Provider</id>
   
-  <name shortname="Piper">Piper Speech Provider</name>
+  <name>Piper Speech Provider</name>
   <summary>Speech provider for neural TTS models</summary>
   
   <metadata_license>MIT</metadata_license>

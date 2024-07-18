@@ -34,7 +34,7 @@ METAINFO_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
   </description>
 
   <languages>
-    <lang>{lang}</lang>
+    <lang percentage="100">{lang}</lang>
   </languages>
 
 </component>
