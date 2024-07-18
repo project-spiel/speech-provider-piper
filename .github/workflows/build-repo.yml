@@ -11,7 +11,7 @@ jobs:
     name: Flatpak
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/andyholmes/flatter/rust:23.08
+      image: ghcr.io/andyholmes/flatter/rust:nightly
       options: --privileged
     permissions:
       contents: write
@@ -27,9 +27,6 @@ jobs:
           ssh-key: ${{ secrets.FLATPAKS_KEY }}
           ref: main
           path: flatpaks
-
-      - name: Install rust nightly SDK
-        run: flatpak install --noninteractive flathub org.freedesktop.Sdk.Extension.rust-nightly//23.08
 
       - name: Setup repo directory
         run: |
