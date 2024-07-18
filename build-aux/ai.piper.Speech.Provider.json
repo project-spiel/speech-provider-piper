@@ -9,7 +9,7 @@
   ],
   "command": "speech-provider-piper",
   "build-options": {
-    "prepend-path": "/usr/lib/sdk/llvm17/bin:/usr/lib/sdk/rust-nightly/bin:/app/sdk/bin",
+    "prepend-path": "/usr/lib/sdk/rust-nightly/extra/sdk/rust-nightly/bin:/usr/lib/sdk/llvm17/bin:/app/sdk/bin",
     "prepend-ld-library-path": "/usr/lib/sdk/llvm17/lib:/app/lib",
     "env": {
       "RUSTFLAGS": "--remap-path-prefix =../ -L/app/lib",
