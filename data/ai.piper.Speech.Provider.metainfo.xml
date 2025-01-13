@@ -23,4 +23,8 @@
     <binary>speech-provider-piper</binary>
     <dbus type="session">ai.piper.Speech.Provider</dbus>
   </provides>
+
+  <custom>
+    <value key="Spiel::provider_name">Piper</value>
+  </custom>
 </component>
