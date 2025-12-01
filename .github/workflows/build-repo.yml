@@ -11,7 +11,7 @@ jobs:
     name: Flatpak
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/andyholmes/flatter/rust:nightly
+      image: ghcr.io/andyholmes/flatter/rust:25.08
       options: --privileged
     permissions:
       contents: write
