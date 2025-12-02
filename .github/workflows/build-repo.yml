@@ -30,7 +30,7 @@ jobs:
 
       - name: Install rust nightly SDK
         run: |
-          flatpak flatpak uninstall --noninteractive org.freedesktop.Sdk.Extension.rust-stable/aarch64/25.08 org.freedesktop.Sdk.Extension.rust-stable/x86_64/25.08
+          flatpak uninstall --noninteractive org.freedesktop.Sdk.Extension.rust-stable/aarch64/25.08 org.freedesktop.Sdk.Extension.rust-stable/x86_64/25.08
           flatpak install --noninteractive flathub org.freedesktop.Sdk.Extension.rust-nightly//25.08
 
       - name: Setup repo directory
