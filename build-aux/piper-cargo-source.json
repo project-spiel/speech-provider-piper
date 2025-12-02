@@ -2,7 +2,7 @@
     {
         "type": "git",
         "url": "https://github.com/eeejay/sonata",
-        "commit": "45ba1a797f8523a5a468ab10d441083839482661",
+        "commit": "0d80cffab1007bd85353286182d52a9ab3530a42",
         "dest": "flatpak-cargo/git/sonata-45ba1a7"
     },
     {

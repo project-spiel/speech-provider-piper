@@ -28,6 +28,9 @@ jobs:
           ref: main
           path: flatpaks
 
+      - name: Install rust nightly SDK
+        run: flatpak install --noninteractive flathub org.freedesktop.Sdk.Extension.rust-nightly//25.08
+
       - name: Setup repo directory
         run: |
           mkdir -p flatpaks/repo

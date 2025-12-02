@@ -5,7 +5,7 @@
   "sdk": "org.freedesktop.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.rust-nightly",
-    "org.freedesktop.Sdk.Extension.llvm17"
+    "org.freedesktop.Sdk.Extension.llvm20"
   ],
   "command": "speech-provider-piper",
   "build-options": {
